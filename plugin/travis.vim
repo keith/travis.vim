@@ -12,7 +12,7 @@ function! s:Travis()
   echom "Foo"
   let script = s:plug . '/python/travis.py'
   execute 'pyfile ' . script
-  execute 'python main()'
+  execute 'python main([None, None])'
 endfunction
 
 command! Travis call s:Travis()
