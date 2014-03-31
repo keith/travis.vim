@@ -9,10 +9,15 @@ let g:loaded_travis = 1
 let s:plug = expand("<sfile>:p:h:h")
 
 function! s:Travis()
-  echom "Foo"
+  " echom "Foo"
   let script = s:plug . '/python/travis.py'
   execute 'pyfile ' . script
-  execute 'python main([None, None])'
+  redir => output
+  silent! execute 'python main()'
+  redir END
+
+  " Remove null bytes
+  echom substitute(output, '\%x00', '', 'g')
 endfunction
 
 command! Travis call s:Travis()
