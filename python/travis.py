@@ -3,6 +3,14 @@ import subprocess
 import urlparse
 import urllib2
 import json
+import re
+
+try:
+    import vim
+except ImportError:
+    in_vim = False
+else:
+    in_vim = True
 
 
 def git_is_repo():
@@ -15,22 +23,26 @@ def line_from_command(command):
                            stderr=subprocess.PIPE)
     return out.stdout.readline().replace("\n", "")
 
+
 def git_remote():
     # TODO: Get default remote name
     # TODO: get remote name off branch name
     # git rev-parse --abbref-ref branch@{u}
     # git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)
     ref = line_from_command("git symbolic-ref -q HEAD")
-    return line_from_command("git for-each-ref --format=%(upstream:short) " + ref)
+    return line_from_command("git for-each-ref --format=%(upstream:short) "
+                             + ref)
+
 
 def git_remote_url(remote):
     r = remote.split("/")[0]
-    return line_from_command("git config remote.%s.url" % r)
+    return re.sub(r"\.git$", "",
+                  line_from_command("git config remote.%s.url" % r))
 
 
 def repo_path(url):
     # TODO: Fix removing url parts
-    return urlparse.urlparse(url).path[:-4]
+    return re.sub(r"^/", "", urlparse.urlparse(url).path)
 
 
 def git_current_branch():
@@ -61,27 +73,43 @@ def pretty_date(d):
         return "Yesterday"
     else:
         return "{} days ago".format(diff.days)
-        datetime.datetime.now(time.localtime())
-        return d.strftime("%b %d %Y")
 
-def main(branch, remote):
-    if not branch:
-        branch = git_current_branch()
-    if not remote:
-        remote = git_remote()
-    print branch
-    print remote
-    print git_remote_url(remote)
-    print repo_path(git_remote_url(remote))
-    url = "https://api.travis-ci.org/repos/CocoaPods/Core"
-    res = urllib2.urlopen(url)
+
+def iso_date(dt):
+    return datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def main():
+# def main(branch, remote):
+    # if not branch:
+    branch = git_current_branch()
+    # if not remote:
+    remote = git_remote()
+    repo_url = repo_path(git_remote_url(remote))
+    url = "https://api.travis-ci.org/repos/%s/branches/%s" % (repo_url, branch)
+    if in_vim:
+        vim.vars["travis_last_url"] = url
+    # print url
+    # url = "https://api.travis-ci.org/repos/CocoaPods/Specs"
+    req = urllib2.Request(url,
+                          headers={"Accept":
+                                   "application/vnd.travis-ci.2+json"})
+    res = urllib2.urlopen(req)
+    # print res.getcode()
     j = json.loads(res.read())
-    print j
-    time = datetime.datetime.strptime(j["last_build_finished_at"],
-                                     "%Y-%m-%dT%H:%M:%SZ")
-    print time
-    print pretty_date(time)
-    # print "Foobar"
+    # print j
+    j = j["branch"]
+    started = j["started_at"]
+    finished = j["finished_at"]
+    message = "Pending... (Started %s)" % pretty_date(iso_date(started))
+    if finished:
+        time = iso_date(finished)
+        message = pretty_date(time)
+    message = (j["state"].title() +
+               " (Updated %s)" % pretty_date(iso_date(finished)))
+    print message
 
-if __name__ == "__main__":
-    main(None, None)
+if not in_vim:
+    if __name__ == "__main__":
+        # main(None, None)
+        main()
