@@ -79,8 +79,8 @@ def iso_date(dt):
     return datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def main():
 # def main(branch, remote):
+def main():
     # if not branch:
     branch = git_current_branch()
     # if not remote:
@@ -94,7 +94,11 @@ def main():
     req = urllib2.Request(url,
                           headers={"Accept":
                                    "application/vnd.travis-ci.2+json"})
-    res = urllib2.urlopen(req)
+    try:
+        res = urllib2.urlopen(req)
+    except urllib2.HTTPError as e:
+        print("%d: %s" % (e.getcode(), e.reason))
+        return
     # print res.getcode()
     j = json.loads(res.read())
     # print j
