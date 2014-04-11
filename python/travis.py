@@ -54,6 +54,8 @@ def git_current_branch():
 
 
 def pretty_date(d):
+    if not d:
+        return "Invalid Date"
     # TODO: Times are lying
     diff = datetime.datetime.utcnow() - d
     s = diff.seconds
@@ -76,11 +78,15 @@ def pretty_date(d):
 
 
 def iso_date(dt):
+    if not dt:
+        return None
     return datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%SZ")
 
 
 # def main(branch, remote):
 def main():
+    print "Yes http://google.com"
+    return
     # if not branch:
     branch = git_current_branch()
     # if not remote:
