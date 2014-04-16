@@ -85,8 +85,8 @@ def iso_date(dt):
 
 # def main(branch, remote):
 def main():
-    print "Yes http://google.com"
-    return
+    # print "Yes http://google.com"
+    # return
     # if not branch:
     branch = git_current_branch()
     # if not remote:
@@ -109,14 +109,16 @@ def main():
     j = json.loads(res.read())
     # print j
     j = j["branch"]
+    build_id = j["id"]
     started = j["started_at"]
     finished = j["finished_at"]
     message = "Pending... (Started %s)" % pretty_date(iso_date(started))
+    html_url = "https://travis-ci.org/%s/builds/%s" % (repo_url, build_id)
     if finished:
         time = iso_date(finished)
         message = pretty_date(time)
     message = (j["state"].title() +
-               " (Updated %s)" % pretty_date(iso_date(finished)))
+               " (Updated %s)" % pretty_date(iso_date(finished)) + " %s" % html_url)
     print message
 
 if not in_vim:

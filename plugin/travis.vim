@@ -64,12 +64,14 @@ function! CreateWindow(name)
 endfunction
 
 function! SourceURL()
+  " TODO: get url from git, make sure it's not ssh url
   echom "hi"
 endfunction
 
 function! LineURL()
   let text = split(getline('.'), ' ')
-  let url = text[1]
+  let url = text[-1]
+  echom url
   call OpenURL(url)
 endfunction
 
