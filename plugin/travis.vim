@@ -40,7 +40,7 @@ endfunction
 
 " Window setup ------ {{{
 function! s:CreateWindow(name)
-  execute 'pedit ' . a:name
+  silent execute 'pedit ' . a:name
   wincmd P
 
   call s:SetupWindow()
@@ -83,7 +83,7 @@ endfunction
 
 " URL Opening functions ------ {{{
 function! s:OpenLineURL()
-  let text = split(getline('.'), '*')
+  let text = split(getline('.'), '|')
   let url = text[-1]
   echom url
   call s:OpenURL(url)
