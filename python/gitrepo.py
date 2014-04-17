@@ -13,15 +13,15 @@ class GitRepo(object):
         # git rev-parse --abbref-ref branch@{u}
         # git for-each-ref --format='%(upstream:short)'
         #        $(git symbolic-ref -q HEAD)
-        ref = self.line_from_command("git symbolic-ref -q HEAD")
-        return self.line_from_command(
+        ref = self.__line_from_command("git symbolic-ref -q HEAD")
+        return self.__line_from_command(
             "git for-each-ref --format=%(upstream:short) " + ref)
 
     def remote_url(self, remote):
         r = remote.split("/")[0]
         return re.sub(r"\.git$",
                       "",
-                      self.line_from_command("git config remote.%s.url" % r))
+                      self.__line_from_command("git config remote.%s.url" % r))
 
     def repo_path(self, url):
         # TODO: Fix removing url parts
@@ -32,7 +32,7 @@ class GitRepo(object):
         # TODO: Branch to use
         # git name-rev --name-only HEAD
         # git rev-parse --abbrev-ref HEAD
-        return self.line_from_command("git rev-parse --abbrev-ref HEAD")
+        return self.__line_from_command("git rev-parse --abbrev-ref HEAD")
 
     def __line_from_command(self, command):
         out = subprocess.Popen(command.split(" "),

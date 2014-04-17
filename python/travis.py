@@ -1,7 +1,7 @@
 import urllib2
 import json
-from gitrepo import GitRepo
-from travisresponse import TravisResponse
+from travis.gitrepo import GitRepo
+from travis.travisresponse import TravisResponse
 
 try:
     import vim
