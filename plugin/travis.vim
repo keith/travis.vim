@@ -9,6 +9,8 @@ let g:loaded_travis = 1
 let s:travis_ran = 0
 let s:plug = expand("<sfile>:p:h:h")
 let s:bname = 'Travis'
+let s:python_version = 'python'
+let s:pyfile_version = 'pyfile'
 
 function! s:Travis()
   call s:Setup()
@@ -24,8 +26,10 @@ endfunction
 
 function! s:Setup()
   if !s:travis_ran
-    let s:script = s:plug . '/python/travis.py'
-    execute 'pyfile ' . s:script
+    let s:script = s:plug . '/travis/travis.py'
+    execute s:python_version . ' import sys'
+    execute s:python_version . ' sys.path.append("' . s:plug . '")'
+    execute s:pyfile_version . s:script
     let s:travis_ran = 1
   endif
 endfunction
