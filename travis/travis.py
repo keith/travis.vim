@@ -1,7 +1,16 @@
-import urllib2
 import json
-from travis.gitrepo import GitRepo
-from travis.travisresponse import TravisResponse
+import urllib2
+
+# Fuck you python
+# If someone can explain to me why python makes this such a pain
+# In the ass I would love that
+try:
+    from travis.gitrepo import GitRepo
+    from travis.travisresponse import TravisResponse
+except ImportError:
+    from gitrepo import GitRepo
+    from travisresponse import TravisResponse
+
 
 try:
     import vim

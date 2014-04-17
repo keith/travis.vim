@@ -1,5 +1,5 @@
-import datetime
 from dateexception import DateException
+import datetime
 
 
 class TravisResponse(object):
@@ -33,6 +33,9 @@ class TravisResponse(object):
         # TODO: Make this a enum type thingy
         return self._state
 
+    def message(self):
+        pass
+
     @staticmethod
     def html_url(self, repo_url):
         return "https://travis-ci.org/%s/builds/%s" % (repo_url, self.build_id)
@@ -51,9 +54,7 @@ class TravisResponse(object):
         # TODO: Times are lying
         diff = datetime.datetime.utcnow() - d
         s = diff.seconds
-        if s < 10:
-            return "Just now"
-        elif s < 60:
+        if s < 60:
             return "{} seconds ago".format(s)
         elif s < 120:
             return "One minute ago"
