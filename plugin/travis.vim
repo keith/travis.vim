@@ -2,36 +2,47 @@
 " Maintainer:   Keith Smiley <http://keith.so>
 " Version:      0.1.0
 
+" Setup ------ {{{
 if exists('g:loaded_travis') && g:loaded_travis
   finish
 endif
 let g:loaded_travis = 1
+
+" Don't yell unless the user tries to run the command without python
+if !has('python')
+  command! Travis :echohl ErrorMsg |
+        \ echo "Travis.vim requires Vim compiled with +python" |
+        \ echohl None<CR>
+  finish
+endif
+
 let s:travis_ran = 0
 let s:plug = expand("<sfile>:p:h:h")
 let s:bname = 'Travis'
-let s:python_version = 'python'
-let s:pyfile_version = 'pyfile'
+let s:python_version = 'python '
+let s:pyfile_version = 'pyfile '
+
+function! s:Setup()
+  if !s:travis_ran
+    let s:script = s:plug . '/travis/travis.py'
+    execute s:python_version . 'import sys'
+    execute s:python_version . 'sys.path.append("' . s:plug . '")'
+    execute s:pyfile_version . s:script
+    let s:travis_ran = 1
+  endif
+endfunction
+" }}}
 
 function! s:Travis()
   call s:Setup()
   call s:ClearWindow(s:bname)
 
   redir => output
-    silent! execute 'python main()'
+    silent! execute s:python_version . 'main()'
   redir END
 
   call s:SelectWindow(s:bname)
   call s:PrintOutput(output)
-endfunction
-
-function! s:Setup()
-  if !s:travis_ran
-    let s:script = s:plug . '/travis/travis.py'
-    execute s:python_version . ' import sys'
-    execute s:python_version . ' sys.path.append("' . s:plug . '")'
-    execute s:pyfile_version . s:script
-    let s:travis_ran = 1
-  endif
 endfunction
 
 function! s:PrintOutput(output)
@@ -54,6 +65,9 @@ endfunction
 function! s:SetupWindow()
   setlocal buftype=nowrite bufhidden=wipe nobuflisted
   setlocal noswapfile nowrap nonumber nomodifiable
+  setlocal conceallevel=2
+  setlocal concealcursor=nivc
+  setlocal syntax=travis
 endfunction
 
 function! s:MapKeys()
@@ -61,7 +75,8 @@ function! s:MapKeys()
   nnoremap <buffer>            r  :Travis<CR>
   nnoremap <buffer> <CR>          :call <SID>OpenLineURL()<CR>
   if exists(":Gbrowse") == 2
-    nnoremap <buffer>          gt :call <SID>OpenSourceURL()<CR>
+    nnoremap <buffer>          gt :call <SID>OpenSourceURL('.')<CR>
+    nnoremap <buffer>          gl :call <SID>OpenSourceURL('-')<CR>
   endif
 endfunction
 
@@ -93,9 +108,9 @@ function! s:OpenLineURL()
   call s:OpenURL(url)
 endfunction
 
-function! s:OpenSourceURL()
+function! s:OpenSourceURL(args)
   if exists(":Gbrowse") == 2
-    execute ':Gbrowse .'
+    execute ':Gbrowse ' . a:args
   else
     " Could manually parse this stuff but only crazy
     " people aren't using fugitive anyways
