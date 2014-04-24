@@ -7,9 +7,11 @@ class TravisResponse(object):
     _end_time = ""
     _state = ""
 
-    def __init__(self, json):
-        branch = json["branch"]
-        self._build_id = branch["id"]
+    def __init__(self, json, root):
+        if not root:
+            root = "branch"
+        branch = json[root]
+        self.build_id = branch["id"]
         self._start_time = branch["started_at"]
         self._end_time = branch["finished_at"]
         self._state = branch["state"]
