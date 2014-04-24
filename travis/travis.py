@@ -1,9 +1,9 @@
 import json
 import urllib2
 
-# Fuck you python
-# If someone can explain to me why python makes this such a pain
-# In the ass I would love that
+# Fuck you python.
+# If someone can explain to me why python makes this such a
+# pain In the ass I would love that
 try:
     from travis.gitrepo import GitRepo
     from travis.travisresponse import TravisResponse
@@ -23,14 +23,15 @@ except ImportError:
 # def main(branch, remote):
 def main():
     # if not branch:
-    repo = GitRepo()
-    branch = repo.current_branch()
-    # if not remote:
-    remote = repo.remote_name()
-    repo_url = repo.repo_path(repo.remote_url(remote))
-    url = "https://api.travis-ci.org/repos/%s/branches/%s" % (repo_url, branch)
     # if in_vim:
-    vim.vars["travis_last_url"] = url
+    try:
+        repo = GitRepo()
+    except ValueError as e:
+        print(e)
+        return
+
+    return
+    # vim.vars["travis_last_url"] = url
     # print url
     # url = "https://api.travis-ci.org/repos/CocoaPods/Specs"
     req = urllib2.Request(url,
@@ -46,9 +47,9 @@ def main():
     message = "Pending... (Started %s)" % travis.start_time
     html_url = ("https://travis-ci.org/%s/builds/%s" %
                 (repo_url, travis.build_id))
-    message = (travis.state.title() +
+    message = (travis.state +
                " (Updated %s)" % travis.end_time + " |%s|" % html_url)
-    print message
+    print(message)
 
 
 # if not in_vim:
