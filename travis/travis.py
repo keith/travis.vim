@@ -12,14 +12,6 @@ except ImportError:
     from travisresponse import TravisResponse
 
 
-try:
-    import vim
-except ImportError:
-    # Hack to ignore Vim code when running outside of vim
-    class vim(object):
-        vars = {}
-
-
 # def main(branch, remote):
 def main():
     try:
