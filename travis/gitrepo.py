@@ -14,11 +14,6 @@ class GitRepo(object):
             return subprocess.call("git rev-parse".split(), stderr=f) == 0
 
     def remote_name(self):
-        # TODO: Get default remote name
-        # TODO: get remote name off branch name
-        # git rev-parse --abbref-ref branch@{u}
-        # git for-each-ref --format='%(upstream:short)'
-        #        $(git symbolic-ref -q HEAD)
         ref = self.__line_from_command("git symbolic-ref -q HEAD")
         return self.__line_from_command(
             "git for-each-ref --format=%(upstream:short) " + ref)
@@ -32,7 +27,6 @@ class GitRepo(object):
                       self.__line_from_command("git config remote.%s.url" % r))
 
     def repo_path(self, url):
-        # TODO: Fix removing url parts
         if not url:
             url = self.remote_url()
         return re.sub(r"^/", "", urlparse.urlparse(url).path)
@@ -41,10 +35,6 @@ class GitRepo(object):
         return self.repo_path(self.remote_url(remote))
 
     def current_branch(self):
-        # TODO: Use current branch?
-        # TODO: Branch to use
-        # git name-rev --name-only HEAD
-        # git rev-parse --abbrev-ref HEAD
         return self.__line_from_command("git rev-parse --abbrev-ref HEAD")
 
     def travis_branch_url(self, remote, branch):
