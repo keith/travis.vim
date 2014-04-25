@@ -22,37 +22,26 @@ except ImportError:
 
 # def main(branch, remote):
 def main():
-    # if not branch:
-    # if in_vim:
     try:
         repo = GitRepo()
     except ValueError as e:
         print(e)
         return
 
-    return
-    # vim.vars["travis_last_url"] = url
-    # print url
-    # url = "https://api.travis-ci.org/repos/CocoaPods/Specs"
+    url = repo.travis_branch_url(None, None)
     req = urllib2.Request(url,
                           headers={"Accept":
                                    "application/vnd.travis-ci.2+json"})
     try:
         res = urllib2.urlopen(req)
-    except urllib2.HTTPError as e:
-        print("%d: %s" % (e.getcode(), e.reason))
+    except (urllib2.HTTPError) as e:
+        print("An error occurred: %d - %s" % (e.getcode(), e.reason))
         return
 
-    travis = TravisResponse(json.loads(res.read()))
-    message = "Pending... (Started %s)" % travis.start_time
-    html_url = ("https://travis-ci.org/%s/builds/%s" %
-                (repo_url, travis.build_id))
-    message = (travis.state +
-               " (Updated %s)" % travis.end_time + " |%s|" % html_url)
-    print(message)
+    travis = TravisResponse(json.loads(res.read()), None, repo)
+    print(travis.message())
 
 
-# if not in_vim:
 if __name__ == "__main__":
     # main(None, None)
     main()
