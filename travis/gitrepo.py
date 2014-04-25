@@ -23,9 +23,9 @@ class GitRepo(object):
         return self.__line_from_command(
             "git for-each-ref --format=%(upstream:short) " + ref)
 
-    def remote_url(self, remote):
+    def remote_url(self, remote=None):
         if not remote:
-            return ""
+            remote = self.remote_name()
         r = remote.split("/")[0]
         return re.sub(r"\.git$",
                       "",
@@ -33,6 +33,8 @@ class GitRepo(object):
 
     def repo_path(self, url):
         # TODO: Fix removing url parts
+        if not url:
+            url = self.remote_url()
         return re.sub(r"^/", "", urlparse.urlparse(url).path)
 
     def path_url(self, remote):

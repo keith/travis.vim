@@ -7,7 +7,7 @@ class TravisResponse(object):
     _end_time = ""
     _state = ""
 
-    def __init__(self, json, root):
+    def __init__(self, json, root, repo):
         if not root:
             root = "branch"
         branch = json[root]
@@ -15,12 +15,21 @@ class TravisResponse(object):
         self._start_time = branch["started_at"]
         self._end_time = branch["finished_at"]
         self._state = branch["state"]
-
-    def message(self):
-        pass
+        self.repo = repo
 
     def html_url(self, repo_url):
+        if not repo_url:
+            repo_url = self.repo.repo_path(None)
         return "https://travis-ci.org/%s/builds/%s" % (repo_url, self.build_id)
+
+    def message(self):
+        if self._end_time:
+            message = (self.state +
+                       " (Updated %s)" % self.end_time +
+                       " |%s|" % self.html_url(None))
+        else:
+            message = "Pending... (Started %s)" % self.start_time
+        return message
 
     @property
     def start_time(self):
@@ -53,10 +62,13 @@ class TravisResponse(object):
         if not d:
             raise ValueError("Invalid Date")
 
-        # TODO: Times are lying
         diff = datetime.datetime.utcnow() - d
         s = diff.seconds
-        if s < 60:
+        if diff.days > 1:
+            return "{} days ago".format(diff.days)
+        elif diff.days == 1:
+            return "Yesterday"
+        elif s < 60:
             return "{} seconds ago".format(s)
         elif s < 120:
             return "One minute ago"
@@ -64,9 +76,5 @@ class TravisResponse(object):
             return "{} minutes ago".format(s / 60)
         elif s < 7200:
             return "One hour ago"
-        elif diff.days < 1:
-            return "{} hours ago".format(s / 60 / 60)
-        elif diff.days == 1:
-            return "Yesterday"
         else:
-            return "{} days ago".format(diff.days)
+            return "{} hours ago".format(s / 60 / 60)
