@@ -114,13 +114,19 @@ function! s:OpenSourceURL(args)
   else
     " Could manually parse this stuff but only crazy
     " people aren't using fugitive anyways
-    echom "Opening the source URL requires fugitive.vim"
+    echohl ErrorMsg |
+      \ echo "Opening the source URL requires fugitive.vim" |
+      \ echohl None
   endif
 endfunction
 
 function! s:OpenURL(url)
-  " TODO: More executables
   let executable = s:Executable()
+  if empty(executable)
+    echohl ErrorMsg |
+      \ echo "Couldn't find executable to open URLs" |
+      \ echohl None
+  endif
   let cmd = 'call system("' . executable . ' ' . a:url . '")'
   execute cmd
 endfunction
