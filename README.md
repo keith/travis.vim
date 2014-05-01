@@ -13,7 +13,7 @@ Inside the Quickfix window:
 
 `r`: refreshes the build status
 
-`<Enter>`: opens the URL on travis-ci.org
+`<Enter>`: opens the build on [Travis](travis-ci.org)
 
 
 With [vim-fugitive](https://github.com/tpope/vim-fugitive) installed:
