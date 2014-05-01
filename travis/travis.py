@@ -27,6 +27,9 @@ def main():
     try:
         res = urllib2.urlopen(req)
     except (urllib2.HTTPError) as e:
+        if e.getcode() == 404:
+            print("Repo not found on Travis")
+            return
         print("An error occurred: %d - %s" % (e.getcode(), e.reason))
         return
 
