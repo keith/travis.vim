@@ -3,7 +3,7 @@
 " Setup ------ {{{
 let s:travis_ran = 0
 let s:plug = expand("<sfile>:p:h:h")
-let s:bname = 'Travis'
+let s:bname = '__Travis__'
 let s:python_version = 'python '
 let s:pyfile_version = 'pyfile '
 
