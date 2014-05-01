@@ -51,6 +51,20 @@ function! s:PrintOutput(output)
   call append(0, output)
   silent! g/^$/d
   setlocal nomodifiable
+  echom s:Instructions()
+endfunction
+
+function! s:Instructions()
+  if exists("s:keys_text")
+    return s:keys_text
+  endif
+
+  let s:keys_text = "travis.vim keys: q=quit/r=refresh/<CR>=open build URL"
+  if exists(":Gbrowse") == 2
+    let s:keys_text .= "/gt=open source URL/gl=open last commit"
+  end
+
+  return s:keys_text
 endfunction
 
 " Window setup ------ {{{
