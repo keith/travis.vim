@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import urlparse
+import vim
 
 
 class GitRepo(object):
@@ -43,17 +44,20 @@ class GitRepo(object):
         if not branch:
             branch = self.current_branch()
         path = self.path_url(remote)
-        return ("https://api.travis-ci.org/repos/%s/branches/%s" %
-                (path, branch))
+        return ("%s/repos/%s/branches/master" %
+                (self.travis_url(), path))
 
     def travis_build_url(self, remote, build):
         if not remote:
             remote = self.remote_name()
         if not build:
             build = "23396887"
+            build = ""
         path = self.path_url(remote)
-        return ("https://api.travis-ci.org/repos/%s/builds/%s" %
-                (path, build))
+        path = "thoughtbot/K-LOVE-iOS"
+        return ("%s/builds?slug=%s" % (self.travis_url(), path))
+        return ("%s/repos/%s/builds/%s" %
+                (self.travis_url(), path, build))
 
     @staticmethod
     def __line_from_command(command):
@@ -61,3 +65,7 @@ class GitRepo(object):
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
         return out.stdout.readline().replace("\n", "")
+
+    @staticmethod
+    def travis_url():
+        return vim.eval("g:travis_api_url")

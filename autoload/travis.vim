@@ -6,6 +6,10 @@ let s:plug = expand("<sfile>:p:h:h")
 let s:bname = '__Travis__'
 let s:python_version = 'python '
 let s:pyfile_version = 'pyfile '
+if !exists("g:travis_base_url")
+  let g:travis_base_url = "https://magnum.travis-ci.com"
+  let g:travis_api_url = "https://api.travis-ci.com"
+endif
 
 function! s:Setup()
   if !s:travis_ran

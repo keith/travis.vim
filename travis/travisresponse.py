@@ -1,4 +1,5 @@
 import datetime
+import vim
 
 
 class TravisResponse(object):
@@ -9,8 +10,8 @@ class TravisResponse(object):
 
     def __init__(self, json, root, repo):
         if not root:
-            root = "branch"
-        branch = json[root]
+            root = "builds"
+        branch = json[root][0]
         self.build_id = branch["id"]
         self._start_time = branch["started_at"]
         self._end_time = branch["finished_at"]
@@ -20,7 +21,7 @@ class TravisResponse(object):
     def html_url(self, repo_url):
         if not repo_url:
             repo_url = self.repo.repo_path(None)
-        return "https://travis-ci.org/%s/builds/%s" % (repo_url, self.build_id)
+        return "%s/%s/builds/%s" % (self.travis_url(), repo_url, self.build_id)
 
     def message(self):
         if self._end_time:
@@ -50,6 +51,10 @@ class TravisResponse(object):
     @property
     def state(self):
         return self._state.title()
+
+    @staticmethod
+    def travis_url():
+        return vim.eval("g:travis_base_url")
 
     @staticmethod
     def iso_date(dt):
