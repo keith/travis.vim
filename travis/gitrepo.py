@@ -29,6 +29,8 @@ class GitRepo(object):
     def repo_path(self, url):
         if not url:
             url = self.remote_url()
+        if ":" in url:
+            return url.partition(':')[2]
         return re.sub(r"^/", "", urlparse.urlparse(url).path)
 
     def path_url(self, remote):
